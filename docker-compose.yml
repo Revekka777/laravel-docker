@@ -1,0 +1,51 @@
+version: "3"
+
+networks:
+  laravel:
+
+services:
+
+  php:
+    build:
+      context: .
+      dockerfile: './docker/php/Dockerfile'
+    ports:
+      - "9000:9000"
+    volumes:
+      - './:/var/www/html'
+    networks:
+      - laravel
+
+  nginx:
+    build:
+      context: .
+      dockerfile: './docker/nginx/Dockerfile'
+    ports:
+      - "80:80"
+    volumes:
+      - './:/var/www/html'
+    networks:
+      - laravel
+
+  db:
+    image: postgres:14.3
+    restart: always
+    tty: true
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: laravel
+    ports:
+      - "5432:5432"
+    volumes:
+      - './docker/postgres/pgdata:/var/lib/postgresql/data'
+    networks:
+      - laravel
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - "8080:8080"
+    networks:
+      - laravel
